@@ -1,0 +1,33 @@
+.scroll-stack-scroller {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-stack-inner {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-stack-card {
+  position: relative;
+  width: 100%;
+  transform-origin: top center;
+  will-change: transform, filter;
+
+  /* Native Safari Backface fix */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+
+  /* Enable hardware acceleration */
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+}
+
+.scroll-stack-end {
+  height: 1px;
+  width: 100%;
+  position: relative;
+  clear: both;
+}
