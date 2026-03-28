@@ -9,7 +9,9 @@ const Projects = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [isAligned, setIsAligned] = useState(false);
   const [flippedIndex, setFlippedIndex] = useState<number | null>(null);
+  const [isAtEnd, setIsAtEnd] = useState(false);
   const sectionRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(sectionRef, { margin: "-100px" });
   const isMobile = useIsMobile();
 
@@ -21,6 +23,9 @@ const Projects = () => {
     "/projects/balloon-4.avif", // Anime (Graphic Design)
     "/projects/balloon-5.avif", // Collage (Digital Art)
   ];
+
+  // Manual offsets to perfectly align the thread with each balloon's basket
+  const basketOffsets = [0, 35, 0, 15, -25, 0];
 
   const balloonPositions = useMemo(() => {
     return balloons.map((src) => {
@@ -76,6 +81,7 @@ const Projects = () => {
         if (isAligned) {
           setIsAligned(false);
           setFlippedIndex(null);
+          setIsAtEnd(false);
         }
       }}
       style={{
@@ -124,6 +130,15 @@ const Projects = () => {
 
       {/* Random Balloons & Flip Cards Container */}
       <div
+        ref={scrollContainerRef}
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          if (el.scrollLeft + el.clientWidth >= el.scrollWidth - 30) {
+            if (!isAtEnd) setIsAtEnd(true);
+          } else {
+            if (isAtEnd) setIsAtEnd(false);
+          }
+        }}
         className={`absolute inset-0 transition-all duration-500 ${isAligned
           ? 'z-20 flex flex-col md:flex-row items-center overflow-y-auto md:overflow-y-hidden md:overflow-x-auto px-4 md:px-8 gap-6 md:gap-8 py-24 md:py-0'
           : 'pointer-events-none'
@@ -211,6 +226,24 @@ const Projects = () => {
                       ease: "easeInOut"
                     }}
                   />
+                  {isAligned && !isFlipped && (
+                    <motion.div
+                      className="absolute inset-x-0 flex justify-center pointer-events-none z-10"
+                      style={{ bottom: "calc(20% - 130px)" }}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+                    >
+                      <div className="px-4 rounded-full bg-white/5 backdrop-blur-sm border border-white/10 relative overflow-hidden flex items-center justify-center w-[220px] md:w-[270px] h-[40px] md:h-[44px] shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+                        <motion.h3
+                          layoutId={`proj-title-${i}`}
+                          className="font-display text-[10px] md:text-[11px] font-semibold text-white/90 tracking-[0.15em] uppercase text-center m-0 leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
+                        >
+                          {project?.title}
+                        </motion.h3>
+                      </div>
+                    </motion.div>
+                  )}
                 </div>
 
                 {/* Back: Project Card */}
@@ -231,8 +264,15 @@ const Projects = () => {
                     <div className="absolute top-0 left-0 right-0 h-[20px] bg-gradient-to-b from-black/80 to-transparent z-10" />
                     {/* Bottom Blend Gradient */}
                     <div className="absolute bottom-0 left-0 right-0 h-[20px] bg-gradient-to-t from-black/80 to-transparent z-10" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                    <h3 className="absolute bottom-4 left-4 text-xl font-bold text-white shadow-sm">{project?.title}</h3>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10" />
+                    {isFlipped && (
+                      <motion.h3 
+                        layoutId={`proj-title-${i}`}
+                        className="absolute bottom-4 left-4 text-xl font-bold text-white shadow-sm z-20"
+                      >
+                        {project?.title}
+                      </motion.h3>
+                    )}
                   </div>
 
                   <div className="p-6 flex flex-col gap-4">
@@ -253,7 +293,28 @@ const Projects = () => {
             </motion.div>
           );
         })}
+
       </div>
+
+      {/* Sticky Bottom Scroll Indicator */}
+      {isAligned && flippedIndex === null && (
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: isAtEnd ? 0 : 1, x: isAtEnd ? 20 : 0 }}
+          className="absolute bottom-6 right-6 md:bottom-10 md:right-10 flex items-center justify-center pointer-events-none z-30"
+        >
+          <div className="text-white/60 font-mono text-[9px] md:text-[10px] tracking-[0.1em] flex flex-row items-center gap-2 bg-black/60 px-4 py-2 rounded-lg border border-white/10 backdrop-blur-md shadow-2xl">
+            <span className="whitespace-nowrap uppercase">Scroll to View</span>
+            <motion.div
+              animate={{ x: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+              className="text-sm leading-none"
+            >
+              ➔
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
 
       <div className="w-full max-w-[1280px] mx-auto px-4 md:px-8 relative z-10 pointer-events-none">
         <motion.div
@@ -269,25 +330,37 @@ const Projects = () => {
           </h2>
         </motion.div>
 
-        <motion.p
-          className="text-center text-lg mb-12 min-h-[1.75rem] font-medium bg-gradient-to-r from-white/40 via-white to-white/40 bg-clip-text text-transparent bg-[length:200%_auto]"
+        <motion.div 
+          className="flex justify-center mb-12"
           initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            backgroundPosition: ["0% center", "-200% center"]
-          }}
-          transition={{
-            opacity: { duration: 0.6, delay: 0.4 },
-            backgroundPosition: { duration: 3, repeat: Infinity, ease: "linear" }
-          }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
-          {
-            !isAligned ? "(Click on balloons)" :
-              flippedIndex === null ?
-                (isMobile ? "(Scroll balloons • Tap to flip • Click outside to exit)" : "(Tap any card to flip for details • Click outside to exit)") :
-                "(Select 'Explore More' to view project • Click outside to close)"
-          }
-        </motion.p>
+          <div className="inline-flex items-center gap-3 px-5 py-2 border border-white/10 bg-black/30 backdrop-blur-sm rounded-lg shadow-lg relative overflow-hidden">
+            {/* Corner decorations for tech feel */}
+            <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-white/30" />
+            <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white/30" />
+            
+            <span className="text-[#EB422F] font-mono font-bold text-lg leading-none mt-[-2px]">{"["}</span>
+            <motion.span
+              className="text-center text-xs md:text-sm font-mono tracking-widest uppercase bg-gradient-to-r from-white/50 via-white to-white/50 bg-clip-text text-transparent bg-[length:200%_auto]"
+              animate={{
+                backgroundPosition: ["0% center", "-200% center"]
+              }}
+              transition={{
+                backgroundPosition: { duration: 3, repeat: Infinity, ease: "linear" }
+              }}
+            >
+              {
+                !isAligned ? "Click on balloons" :
+                  flippedIndex === null ?
+                    (isMobile ? "Scroll balloons • Tap to flip • Click out to exit" : "Tap any card to flip • Click out to exit") :
+                    "Select 'Explore More' • Click out to close"
+              }
+            </motion.span>
+            <span className="text-[#EB422F] font-mono font-bold text-lg leading-none mt-[-2px]">{"]"}</span>
+          </div>
+        </motion.div>
 
 
       </div>

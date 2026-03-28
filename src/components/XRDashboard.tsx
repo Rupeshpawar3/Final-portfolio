@@ -62,10 +62,11 @@ const DashCard = ({ children, style, className, onMouseMove, onMouseLeave, ...pr
 const XRDashboard = () => {
   /* ── STATE ── */
   const [activePip, setActivePip] = useState(0);
-  const [sysPct, setSysPct] = useState(72);
+  const [sysPct, setSysPct] = useState(1);
   const [subText, setSubText] = useState("");
   const [statNum, setStatNum] = useState("0+");
   const [barsVisible, setBarsVisible] = useState(false);
+  const [barHeights, setBarHeights] = useState([35, 50, 40, 66, 55, 78, 62, 88, 70, 95, 80, 92]);
 
   const chartRef = useRef<HTMLDivElement>(null);
   const statRef = useRef<HTMLSpanElement>(null);
@@ -73,7 +74,6 @@ const XRDashboard = () => {
   const flagRef = useRef<SVGPathElement>(null);
   const cubeRef = useRef<SVGSVGElement>(null);
 
-  const barData = [35, 50, 40, 66, 55, 78, 62, 88, 70, 95, 80, 92];
   const steps = ["Research & goals", "Interaction strategy", "Build and test", "Deploy and refine"];
   const progressWidths = ["25%", "50%", "75%", "100%"];
 
@@ -101,9 +101,20 @@ const XRDashboard = () => {
 
   /* ── SYS PERCENT LIVE ── */
   useEffect(() => {
+    let p = 1;
     const iv = setInterval(() => {
-      setSysPct(v => Math.round(Math.max(60, Math.min(94, v + (Math.random() - 0.48) * 1.4))));
-    }, 1500);
+      p += 1;
+      if (p > 100) p = 1;
+      setSysPct(p);
+    }, 250);
+    return () => clearInterval(iv);
+  }, []);
+
+  /* ── BARS DANCE ── */
+  useEffect(() => {
+    const iv = setInterval(() => {
+      setBarHeights(prev => prev.map(h => Math.max(15, Math.min(100, h + (Math.random() - 0.5) * 50))));
+    }, 450);
     return () => clearInterval(iv);
   }, []);
 
@@ -257,7 +268,7 @@ const XRDashboard = () => {
           flex:1; border-radius:2px 2px 0 0;
           background:linear-gradient(180deg,rgba(224,40,26,0.55),rgba(224,40,26,0.15));
           transform: scaleY(0); transform-origin: bottom;
-          transition: transform .7s cubic-bezier(0.23,1,0.32,1), background .25s, box-shadow .25s;
+          transition: transform .7s cubic-bezier(0.23,1,0.32,1), background .25s, box-shadow .25s, height 0.45s ease-in-out;
         }
         .xrd-mb.visible{transform:scaleY(1);}
         .xrd-mb.tall{background:linear-gradient(180deg,rgba(255,60,30,0.75),rgba(224,40,26,0.22));box-shadow:0 0 8px rgba(224,40,26,0.6);}
@@ -270,8 +281,6 @@ const XRDashboard = () => {
 
         {/* ══ HERO ══ */}
         <DashCard className="xrd-card p-8" style={{ background: "radial-gradient(ellipse 65% 55% at 90% 115%,rgba(180,20,10,0.13),transparent 60%),radial-gradient(ellipse 45% 35% at 5% -5%,rgba(255,255,255,0.02),transparent 55%),#0e0e0e", animation: "xrd-fade-up .7s cubic-bezier(0.23,1,0.32,1) .05s both" }} {...cardProps}>
-          {/* Accent line */}
-          <div style={{ position: "absolute", bottom: 0, left: 32, height: 2, background: "linear-gradient(90deg,#e0281a,rgba(255,100,60,0.7))", boxShadow: "0 0 16px #e0281a", animation: "xrd-accent-grow 1.2s cubic-bezier(0.23,1,0.32,1) .5s forwards, xrd-accent-pulse 2.8s ease-in-out 1.7s infinite", width: 0 }} />
           {/* Circuit art */}
           <svg style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 160, opacity: .06 }} viewBox="0 0 160 500" fill="none">
             <path d="M140 30 L140 90 L100 90 L100 150 L140 150 L140 210" stroke="rgba(224,40,26,0.45)" strokeWidth="1"/>
@@ -303,10 +312,10 @@ const XRDashboard = () => {
           <div style={{ marginTop: 24, padding: "8px 16px", border: "1px solid rgba(224,40,26,0.12)", borderRadius: 8, background: "rgba(224,40,26,0.03)", display: "flex", alignItems: "center", gap: 16, fontFamily: "'Share Tech Mono',monospace", fontSize: 10, color: "rgba(224,40,26,0.45)", letterSpacing: ".08em", position: "relative", zIndex: 2 }}>
             <div style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(80,240,120,0.9)", boxShadow: "0 0 8px rgba(80,240,120,0.8)", animation: "xrd-sys-dot .9s step-end infinite", flexShrink: 0 }} />
             <span>PORTFOLIO SYSTEM: ACTIVE</span>
-            <div style={{ flex: 1, height: 2, background: "rgba(224,40,26,0.1)", borderRadius: 1, overflow: "hidden" }}>
-              <div style={{ height: "100%", borderRadius: 1, background: "linear-gradient(90deg,#e0281a,rgba(255,100,60,.7))", boxShadow: "0 0 6px #e0281a", animation: "xrd-sys-fill 2.5s cubic-bezier(0.23,1,0.32,1) .7s both" }} />
+            <div style={{ flex: 1, height: 2, background: "rgba(80,240,120,0.1)", borderRadius: 1, overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: 1, width: `${sysPct}%`, background: "linear-gradient(90deg,rgba(80,240,120,0.4),rgba(80,240,120,0.9))", boxShadow: "0 0 6px rgba(80,240,120,0.8)", transition: "width 0.1s linear" }} />
             </div>
-            <span style={{ color: "rgba(80,240,120,0.7)", fontSize: 10 }}>{sysPct}%</span>
+            <span style={{ color: "rgba(80,240,120,0.7)", fontSize: 10, width: "24px", textAlign: "right" }}>{sysPct}%</span>
           </div>
         </DashCard>
 
@@ -445,9 +454,9 @@ const XRDashboard = () => {
             </div>
             {/* Micro Chart */}
             <div ref={chartRef} style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 26, marginBottom: 8, paddingBottom: 2, borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-              {barData.map((h, i) => (
+              {barHeights.map((h, i) => (
                 <div key={i} className={`xrd-mb${h > 75 ? " tall" : ""}${barsVisible ? " visible" : ""}`}
-                  style={{ height: `${h}%`, transitionDelay: `${i * 0.055}s` }} />
+                  style={{ height: `${h}%` }} />
               ))}
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, marginBottom: 3 }}>
@@ -470,7 +479,7 @@ const XRDashboard = () => {
                 <div style={{ fontFamily: "'Orbitron',monospace", fontSize: 15, fontWeight: 800, color: "#e0e0e0", marginBottom: 7 }}>Leadership & Team Delivery</div>
                 <p style={{ fontSize: 11, color: "#aaa", lineHeight: 1.6, maxWidth: 225, fontWeight: 300 }}>Led creative execution, team coordination, and delivery across design and production workflows.</p>
               </div>
-              <svg ref={cubeRef} width="32" height="32" viewBox="0 0 40 40" fill="none" style={{ filter: "drop-shadow(0 0 10px rgba(224,40,26,0.65))", flexShrink: 0, marginTop: 4 }}>
+              <svg ref={cubeRef} width="56" height="56" viewBox="0 0 40 40" fill="none" style={{ filter: "drop-shadow(0 0 10px rgba(224,40,26,0.65))", flexShrink: 0, marginTop: 4 }}>
                 <line x1="8" y1="4" x2="8" y2="36" stroke="#e0281a" strokeWidth="2" strokeLinecap="round"/>
                 <path ref={flagRef} d="M8 6 L32 14 L8 22 Z" fill="#e0281a" fillOpacity=".9"/>
               </svg>
@@ -488,7 +497,7 @@ const XRDashboard = () => {
                 <div style={{ fontFamily: "'Share Tech Mono',monospace", fontSize: 9, color: "rgba(224,40,26,0.32)", marginBottom: 7, letterSpacing: ".06em" }}>UI/UX · 3D · XR</div>
                 <p style={{ fontSize: 10.5, color: "#aaa", lineHeight: 1.55 }}>Building scalable experiences across web, XR, 3D, and interactive product platforms. <span style={{ color: "#e0281a", opacity: .8 }}>✕</span></p>
               </div>
-              <svg width="44" height="44" viewBox="0 0 56 56" fill="none" style={{ flexShrink: 0, marginLeft: 10, filter: "drop-shadow(0 0 10px rgba(224,40,26,0.3))" }}>
+              <svg width="44" height="44" viewBox="0 0 56 56" fill="none" style={{ flexShrink: 0, marginLeft: 10, filter: "drop-shadow(0 0 10px rgba(224,40,26,0.3))", animation: "xrd-o-spin 15s linear infinite", transformOrigin: "center" }}>
                 <path d="M32 8 L44 14 L44 26 L32 32 L20 26 L20 14 Z" fill="rgba(180,20,10,0.14)" stroke="#b01010" strokeWidth="1.1" strokeOpacity=".55"/>
                 <path d="M18 22 L30 28 L30 40 L18 46 L6 40 L6 28 Z" fill="rgba(224,40,26,0.18)" stroke="#e0281a" strokeWidth="1.2" strokeOpacity=".85"/>
                 <path d="M32 26 L44 32 L44 44 L32 50 L20 44 L20 32 Z" fill="rgba(180,20,10,0.11)" stroke="#a01008" strokeWidth="1" strokeOpacity=".5"/>

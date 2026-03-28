@@ -111,39 +111,39 @@ const WorkExperience = () => {
             ]
         },
         {
-            company: "MOVING PIXELS",
+            company: "Moving Pixels Private Limited",
             role: "Senior Designer",
-            period: "Nov 2023 – Feb 2024",
+            period: "Sep 2023 – Jan 2024",
             image: "/work/moving_pixels.jpg",
             objectPosition: "center 20%",
             icon: PenTool,
             description: [
-                "Designed political campaign graphics and high-impact promotional assets.",
-                "Delivered clear, persuasive visuals that strengthened campaign reach."
+                "Designed political campaign graphics and promotional assets for print and digital communication.",
+                "Created high-impact visual materials that supported campaign messaging and audience reach."
             ]
         },
         {
-            company: "THAT'S AWESOME STUDIO",
-            role: "Sr Art & Design Lead",
+            company: "That's Awesome Studio",
+            role: "Sr. Creative Associate Lead",
             period: "Feb 2023 – Aug 2023",
             image: "/work/tas.jpg",
             objectPosition: "center 20%",
             icon: Gamepad2,
             description: [
-                "Led creation of ARYAN (virtual influencer) and art for Project Katana (3D game).",
-                "Established pipelines and produced UI, menu, and merch-ready assets."
+                "Led creative development for ARYAN, Hyderabad’s first virtual influencer, and contributed to Project Katana, a 3D game project.",
+                "Produced UI screens, menus, HUD elements, characters, landscapes, and branded assets for app, game, and marketing use."
             ]
         },
         {
             company: "BYJU'S",
-            role: "Associate Art & Design",
+            role: "Creative Design Associate",
             period: "Aug 2020 – Jan 2023",
             image: "/work/byjus.jpg",
             objectPosition: "center 20%",
             icon: GraduationCap,
             description: [
-                "Produced 3,000+ K10 learning assets; expert in Adobe Creative Suite.",
-                "Coordinated projects, improved team workflows, and ensured brand quality."
+                "Designed and improved learning app assets for 3,000+ K10 educational resources using wireframes, layouts, UI elements, and design systems.",
+                "Coordinated with cross-functional teams to maintain brand consistency, workflow alignment, and delivery quality."
             ]
         },
         {
