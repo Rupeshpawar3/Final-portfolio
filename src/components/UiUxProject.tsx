@@ -278,14 +278,26 @@ const UiUxProject = ({ project }: UiUxProjectProps) => {
             </p>
           </div>
           
-          <div className="relative w-full overflow-hidden rounded-[24px] border border-white/10 aspect-video bg-[#0B0C0E] shadow-xl">
-            <iframe 
-              src="https://www.youtube.com/embed/ZBPLxA7jhhk"
-              title="UI/UX Showcase Video"
-              className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-            ></iframe>
+          <div className="flex flex-col gap-12 w-full">
+            {[
+              { id: "ZBPLxA7jhhk", title: "YOGA APP UI/UX" },
+              { id: "-ps7DjewunM", title: "PUPFOOD" }
+            ].map((video, idx) => (
+              <div key={idx} className="flex flex-col gap-6">
+                <h4 className="text-xl md:text-2xl font-bold text-white uppercase tracking-widest pl-4 border-l-4 border-[#F95222] font-display">
+                  {video.title}
+                </h4>
+                <div className="relative w-full overflow-hidden rounded-[24px] border border-white/10 aspect-video bg-[#0B0C0E] shadow-xl">
+                  <iframe 
+                    src={`https://www.youtube.com/embed/${video.id}`}
+                    title={video.title}
+                    className="w-full h-full border-0 object-cover"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
+            ))}
           </div>
           
         </div>
